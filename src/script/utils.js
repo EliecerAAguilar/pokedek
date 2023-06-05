@@ -30,7 +30,7 @@ const colors = {
     ice: '#e0f5ff ',
 }
 
-const get_json = (url) => {
+export const get_json = (url) => {
     return fetch(url).then((it) => it.json())
 }
 
