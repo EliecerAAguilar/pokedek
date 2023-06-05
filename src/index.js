@@ -25,10 +25,7 @@ const create_pokemon_container = pokemon => {
     const { name, weight } = pokemon;
     const id = pokemon.id.toString().padStart(3, "0");
     const type = pokemon.types[0].type.name;
-    const skills = [];
-    for(const ability of pokemon.abilities){
-        skills.push(ability.ability.name);
-    }
+    const skills = pokemon.abilities.map((ability) => ability.ability.name)
     const pokemon_element = document.createElement("div");
     pokemon_element.classList.add("pokemon_box");
     pokemon_element.style.backgroundColor = colors[type];
