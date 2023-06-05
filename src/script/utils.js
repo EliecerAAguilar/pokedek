@@ -34,13 +34,13 @@ export const get_json = (url) => {
     return fetch(url).then((it) => it.json())
 }
 
-const includes = (search_in, search_for) => {
+const search = (search_in, search_for) => {
     return search_in.toLowerCase().includes(search_for.toLowerCase())
 }
 
 
 class pokedex {
-    constructor(baseURL_pokedex, show_pokemon = 10) {
+    constructor(baseURL_pokedex, show_pokemon = 30) {
         this.next_page = `${baseURL_pokedex}?limit=${show_pokemon}&offset=0`
         this.current_page = null
         this.prev_page = null
@@ -83,7 +83,7 @@ class pokedex {
             return all_pokemon
         }
 
-        return all_pokemon.filter((it) => includes(it.name, keyword))
+        return all_pokemon.filter((it) => search(it.name, keyword))
     }
 
     search_by_skill = (skill) => {
@@ -92,7 +92,10 @@ class pokedex {
             return all_pokemon
         }
 
-        return all_pokemon.filter((it)=> includes(it.name, skill))
+        //return all_pokemon.filter((it)=> search(it.abilities[0].ability.name, skill))
+        return all_pokemon.filter((it) =>
+            it.abilities.some((ability) => ability.ability.name === skill)
+        )
     }
 }
 
