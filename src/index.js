@@ -1,7 +1,7 @@
 import 'regenerator-runtime';
 import './styles/style.css';
-import { baseURL_pokedex, colors, title, pokedex} from './script/utils';
-
+import { baseURL_pokedex, colors, title, pokedex, get_json} from './script/utils';
+import { async } from 'regenerator-runtime';
 
 
 const pokemon_container = document.querySelector(".pokemon_container");
@@ -21,19 +21,50 @@ input_search.addEventListener("input", () => {
 window.addEventListener('load', load_next_page);
 document.querySelector("#load_button").addEventListener("click", load_next_page);
 
+
+const get_evolution_chain = async (id_str = 5) => {
+    const ID = parseInt(id_str,10).toString();
+    const evolutionEndpoint = `https://pokeapi.co/api/v2/evolution-chain/${ID}/`;
+    const evolutionChain = await get_json(evolutionEndpoint);
+    const evolutionChainArray = [];
+
+    // Obtener el nombre del Pokémon inicial
+    const initialPokemon = evolutionChain.chain.species.name;
+    evolutionChainArray.push(initialPokemon);
+
+    // Obtener las evoluciones
+    const evolvesTo = evolutionChain.chain.evolves_to;
+    if (evolvesTo.length > 0) {
+        const firstEvolution = evolvesTo[0].species.name;
+        evolutionChainArray.push(firstEvolution);
+
+        // Obtener las siguientes evoluciones si existen
+        const secondEvolvesTo = evolvesTo[0].evolves_to;
+        if (secondEvolvesTo.length > 0) {
+            const secondEvolution = secondEvolvesTo[0].species.name;
+            evolutionChainArray.push(secondEvolution);
+        }
+    }
+    return evolutionChainArray;
+
+  }
+
 const create_pokemon_container = pokemon => {
     const { name, weight } = pokemon;
     const id = pokemon.id.toString().padStart(3, "0");
     const type = pokemon.types[0].type.name;
     const skills = pokemon.abilities.map((ability) => ability.ability.name)
+
+    const evolutions = get_evolution_chain(id);
+
     const pokemon_element = document.createElement("div");
     pokemon_element.classList.add("pokemon_box");
     pokemon_element.style.backgroundColor = colors[type];
-    pokemon_element.innerHTML = pokemon_html(id, name, weight, type,skills)
+    pokemon_element.innerHTML = pokemon_html(id, name, weight, type,evolutions,skills)
     pokemon_container.appendChild(pokemon_element);
 }
 
-const pokemon_html = (id, name, weight, type,skills) => {
+const pokemon_html = (id, name, weight, type, evolutionChain,skills) => {
     return `
         <img
             class="pokemon_img"
@@ -43,8 +74,9 @@ const pokemon_html = (id, name, weight, type,skills) => {
         <h3 class="pokemon_name">${name}</h3>
         <p class="pokemon_id">ID: ${id}</p>
         <p class="pokemon_weight">Peso: ${weight} kg</p>
-        <p class="pokemon_type">Tipo : ${type}</p>
+        <p class="pokemon_type">Tipo: ${type}</p>
         <p class="pokemon_skill">Habilidades : ${skills}</p>
+        <p class="pokemon_skill">Evoluciones : ${evolutionChain}</p>
 
 
     `
