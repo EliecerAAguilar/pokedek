@@ -6,6 +6,7 @@ import { async } from 'regenerator-runtime';
 
 const pokemon_container = document.querySelector(".pokemon_container");
 const input_search = document.querySelector("#search_input");
+const searchByAbility = document.querySelector("#search_skill");
 const pokemon = new pokedex(baseURL_pokedex);
 
 const load_next_page = async() => {
@@ -13,6 +14,7 @@ const load_next_page = async() => {
     pokemons.forEach(create_pokemon_container);
 }
 
+// search box by names
 input_search.addEventListener("input", () => {
     pokemon_container.innerHTML = "";
     pokemon.search_by_name(input_search.value).forEach(create_pokemon_container);
@@ -20,6 +22,12 @@ input_search.addEventListener("input", () => {
 
 window.addEventListener('load', load_next_page);
 document.querySelector("#load_button").addEventListener("click", load_next_page);
+
+// search box by abilities
+searchByAbility.addEventListener("input", () => {
+    pokemon_container.innerHTML = "";
+    pokemon.search_by_skill(searchByAbility.value).forEach(create_pokemon_container);
+});
 
 
 const get_evolution_chain = async (id_str = 5) => {
