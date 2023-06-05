@@ -55,13 +55,16 @@ const create_pokemon_container = pokemon => {
     const type = pokemon.types[0].type.name;
     const skills = pokemon.abilities.map((ability) => ability.ability.name)
 
-    const evolutions = get_evolution_chain(id);
-
-    const pokemon_element = document.createElement("div");
-    pokemon_element.classList.add("pokemon_box");
-    pokemon_element.style.backgroundColor = colors[type];
-    pokemon_element.innerHTML = pokemon_html(id, name, weight, type,evolutions,skills)
-    pokemon_container.appendChild(pokemon_element);
+    let evolutions = []
+    get_evolution_chain(id)
+    .then((response) => evolutions = response )
+    .finally(() => {
+        const pokemon_element = document.createElement("div");
+        pokemon_element.classList.add("pokemon_box");
+        pokemon_element.style.backgroundColor = colors[type];
+        pokemon_element.innerHTML = pokemon_html(id, name, weight, type,evolutions,skills)
+        pokemon_container.appendChild(pokemon_element);
+    })
 }
 
 const pokemon_html = (id, name, weight, type, evolutionChain,skills) => {
